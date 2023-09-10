@@ -76,6 +76,22 @@ def get_connection_url(connection: BigQueryConnection) -> str:
     return f"{connection.scheme.value}://"
 
 
+def get_specific_connection_url(connection: BigQueryConnection, project_id: str):
+    return f"{connection.scheme.value}://{project_id}"
+
+
+def create_bigquery_engine(connection, project_id):
+    # Use the generic function to create the engine
+    engine = create_generic_db_connection(
+        connection,
+        get_connection_url_fn=lambda conn: get_specific_connection_url(
+            connection=conn, project_id=project_id
+        ),
+        get_connection_args_fn=get_connection_args_common,
+    )
+    return engine
+
+
 def get_connection(connection: BigQueryConnection) -> Engine:
     """
     Prepare the engine and the GCP credentials
